@@ -1,0 +1,55 @@
+<?php
+
+use Drupal\node\NodeInterface;
+use Drupal\taxonomy\Entity\Term;
+
+/**
+ * Implements hook_entity_presave().
+ */
+function comprehend_tagging_entity_presave(\Drupal\Core\Entity\EntityInterface $entity): void
+{
+  if ($entity instanceof NodeInterface && $entity->bundle() === 'article') {
+    if (!$entity->hasField('body') || !$entity->hasField('field_ai_tags')) {
+      return;
+    }
+
+    $text = $entity->get('body')->value ?? '';
+
+    /** @var \Drupal\comprehend_tagging\Service\ComprehendService $service */
+    $service = \Drupal::service('comprehend_tagging.comprehend');
+
+    $phrases = $service->extractEntities($text);
+
+
+    $tags = [];
+    $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+
+
+    foreach ($phrases as $item) {
+      $label = $item['Name'] ?? '';
+
+
+
+      // if (strlen($label) < 3 || ($item['Score'] ?? 0) < 0.85) {
+      //   continue;
+      // }
+
+      $existing_terms = $term_storage->loadByProperties([
+        'name' => $label,
+        'vid' => 'ai_tags',
+      ]);
+
+      $term = !empty($existing_terms)
+        ? reset($existing_terms)
+        : Term::create(['name' => $label, 'vid' => 'ai_tags']);
+
+      if ($term->isNew()) {
+        $term->save();
+      }
+
+      $tags[] = $term->id();
+    }
+
+    $entity->set('field_ai_tags', $tags);
+  }
+}

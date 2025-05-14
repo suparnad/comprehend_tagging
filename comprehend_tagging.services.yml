@@ -1,0 +1,3 @@
+services:
+  comprehend_tagging.comprehend:
+    class: 'Drupal\comprehend_tagging\Service\ComprehendService'
