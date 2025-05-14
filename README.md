@@ -28,6 +28,7 @@ AWS_COMPREHEND_ENDPOINT_ARN=arn:aws:comprehend:...
 
 ```bash
 drush en comprehend_tagging -y
+```
 Save or edit an article node to trigger automatic tagging.
 
 Testing
