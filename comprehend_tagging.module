@@ -8,48 +8,62 @@ use Drupal\taxonomy\Entity\Term;
  */
 function comprehend_tagging_entity_presave(\Drupal\Core\Entity\EntityInterface $entity): void
 {
+  // Only if the entity is node and content type is an "article"
   if ($entity instanceof NodeInterface && $entity->bundle() === 'article') {
+
+    // If the article doesn't have a body field or the AI tags field, stop the function early
     if (!$entity->hasField('body') || !$entity->hasField('field_ai_tags')) {
       return;
     }
 
+    // Get the text from the body field, If the body is empty, set $text to an empty string.
     $text = $entity->get('body')->value ?? '';
 
-    /** @var \Drupal\comprehend_tagging\Service\ComprehendService $service */
+    /**
+     * @var \Drupal\comprehend_tagging\Service\ComprehendService $service
+     * Service to extract AI entities from the node body text.
+     */
     $service = \Drupal::service('comprehend_tagging.comprehend');
 
+    //Call the service to extract AI-generated phrases or entities from the body text
     $phrases = $service->extractEntities($text);
 
-
+    //Prepare an empty array for tags
     $tags = [];
+
+    //Get access to the storage for taxonomy terms
     $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
 
-
+    //For each phrase returned from the AI, get the label 
     foreach ($phrases as $item) {
       $label = $item['Name'] ?? '';
 
-
-
-      // if (strlen($label) < 3 || ($item['Score'] ?? 0) < 0.85) {
+      //ignore short or low-confidence words
+      /*if (strlen($label) < 3 || ($item['Score'] ?? 0) < 0.85) {
       //   continue;
-      // }
+      }*/
 
+      //Check if a term with the same label already exists in the ai_tags vocabulary.
       $existing_terms = $term_storage->loadByProperties([
         'name' => $label,
         'vid' => 'ai_tags',
       ]);
 
+      //If the tag exists, use it.Otherwise, create a new tag with that label.
       $term = !empty($existing_terms)
         ? reset($existing_terms)
         : Term::create(['name' => $label, 'vid' => 'ai_tags']);
 
+      //If it's a new tag, save it to the database
       if ($term->isNew()) {
         $term->save();
       }
 
+      //Add the term ID to the $tags list to be set on the article.
       $tags[] = $term->id();
     }
 
+    //Set the AI-generated tag IDs into the field_ai_tags field on the article node
     $entity->set('field_ai_tags', $tags);
   }
 }
