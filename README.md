@@ -31,7 +31,7 @@ drush en comprehend_tagging -y
 ```
 Go to [AWS comprehend repo](https://github.com/suparnad/aws_comprehend_for_auto_tag)
 Download terraform files
-Follow steps to [deploy] (https://github.com/suparnad/aws_comprehend_for_auto_tag) 
+Follow steps to [deploy](https://github.com/suparnad/aws_comprehend_for_auto_tag) 
 
 Save or edit an article node to trigger automatic tagging.
 
