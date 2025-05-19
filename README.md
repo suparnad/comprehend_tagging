@@ -29,7 +29,7 @@ AWS_COMPREHEND_ENDPOINT_ARN=arn:aws:comprehend:...
 ```bash
 drush en comprehend_tagging -y
 ```
-Go to https://github.com/suparnad/aws_comprehend_for_auto_tag
+Go to AWS comprehend repo(https://github.com/suparnad/aws_comprehend_for_auto_tag)
 Download terraform files
 Follow steps to deploy(https://github.com/suparnad/aws_comprehend_for_auto_tag) 
 
