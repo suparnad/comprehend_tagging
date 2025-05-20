@@ -17,10 +17,10 @@ This Drupall 11 custom module integrates with Amazon Comprehend to automatically
 
 Use `.env` and `vlucas/phpdotenv` to load credentials:
 
-AWS_ACCESS_KEY_ID=...
-AWS_SECRET_ACCESS_KEY=...
-AWS_DEFAULT_REGION=eu-west-2
-AWS_COMPREHEND_ENDPOINT_ARN=arn:aws:comprehend:...
+AWS_ACCESS_KEY_ID = ...
+AWS_SECRET_ACCESS_KEY = ...
+AWS_DEFAULT_REGION = ....
+AWS_COMPREHEND_ENDPOINT_ARN = arn:aws:comprehend:...
 
 ---
 
@@ -31,19 +31,25 @@ drush en comprehend_tagging -y
 ```
 Go to [AWS comprehend repo](https://github.com/suparnad/aws_comprehend_for_auto_tag)
 Download terraform files
+
 Follow steps to [deploy](https://github.com/suparnad/aws_comprehend_for_auto_tag) 
 
-Save or edit an article node to trigger automatic tagging.
+## Test 
 
-Testing
-Create or update an article with meaningful text in the body. The module will:
+1. Create a taxonomy, vocabulary name AI tags (machine name : ai_tags)
 
-Extract the body text
+2. Add that taxonomy to the Article content type.
 
-Send it to the Comprehend endpoint
+3. Create an article with meaningful text in the body. 
 
-Add or reuse a term in ai_tags
+The module will:
 
-Attach it to field_ai_tags
+  1. Extract the body text
 
-Logs are written to Drupal’s watchdog if Comprehend is unavailable.
+  2. Send it to the Comprehend endpoint
+
+  3. Add or reuse a term in ai_tags
+
+  4. Attach it to field_ai_tags
+
+4. Logs are written to Drupal’s watchdog if Comprehend is unavailable.
